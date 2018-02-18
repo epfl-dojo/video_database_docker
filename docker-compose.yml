@@ -1,0 +1,32 @@
+version: '2'
+
+services:
+   db:
+     build: ./mysql
+     volumes:
+       - db_data:/var/lib/mysql
+     environment:
+       MYSQL_ROOT_PASSWORD: root
+   php:
+    build: ./php
+    ports:
+      - '8000:80'
+    restart: always
+    volumes:
+       - /var/log/apache2/error.log:/var/log/apache2/error.log
+       - /var/log/apache2/access.log:/var/log/apache2/access.log
+       - ./html:/var/www/html
+    depends_on:
+      - db
+   phpmyadmin:
+      image: phpmyadmin/phpmyadmin
+      environment:
+      - PMA_ARBITRARY=1
+      ports:
+      - 8082:80
+      volumes:
+      - /sessions
+      restart: always
+
+volumes:
+    db_data:
